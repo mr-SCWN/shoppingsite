@@ -329,96 +329,132 @@ function addToCart(){
 
 
 function cartItems(){
-    var tableBody=  document.getElementById('table-body');
-    tableBody.innerHTML= '';
+    const tableBody = document.getElementById('table-body');
+    tableBody.innerHTML = '';
+  
+    cartData.forEach(item => {
+      const tr = document.createElement('tr');
+  
+      // 1) image
+      const cellImg = document.createElement('td');
+      const img = document.createElement('img');
+      img.src = item.img;
+      cellImg.appendChild(img);
+  
+      // 2) name
+      const cellName = document.createElement('td');
+      cellName.innerText = item.name;
+  
+      // 3) SPICENESS
+        const cellSpice = document.createElement('td');
 
-    cartData.map(item=> {
-        var tableRow= document.createElement('tr');
-        
-        var rowData1= document.createElement('td');
-        var img= document.createElement('img');
-        img.src= item.img;
-        rowData1.appendChild(img);
-    
-        var rowData2= document.createElement('td');
-        rowData2.innerText= item.name;
-        
-        var rowData3= document.createElement('td');
-        var btn1= document.createElement('button');
-        btn1.setAttribute('class','decrease-item');
-        btn1.innerText= '-';
-        var span= document.createElement('span');
-        span.innerText= item.quantity;
-        var btn2= document.createElement('button');
-        btn2.setAttribute('class','increase-item');
-        btn2.innerText= '+';
-        
-        rowData3.appendChild(btn1);
-        rowData3.appendChild(span);
-        rowData3.appendChild(btn2);
-    
-        var rowData4= document.createElement('td');
-        rowData4.innerText= item.price;
-    
-        tableRow.appendChild(rowData1);
-        tableRow.appendChild(rowData2);
-        tableRow.appendChild(rowData3);
-        tableRow.appendChild(rowData4);
-    
-        tableBody.appendChild(tableRow);
-    })
-    document.querySelectorAll('.increase-item').forEach(item=>{
-        item.addEventListener('click',incrementItem)
-    })
+        const btnSpiceDec = document.createElement('button');
+        btnSpiceDec.className = 'decrease-spice';
+        btnSpiceDec.innerText = '–';
+        cellSpice.appendChild(btnSpiceDec);
 
-    document.querySelectorAll('.decrease-item').forEach(item=>{
-        item.addEventListener('click',decrementItem)
-    })
-}
-
-
-function incrementItem(){
-    let itemToInc= this.parentNode.previousSibling.innerText;
-    console.log(itemToInc)
-    var incObj= cartData.find(element=>element.name==itemToInc);
-    incObj.quantity+=1;
-    
-    currPrice= (incObj.price*incObj.quantity - incObj.price*(incObj.quantity-1))/(incObj.quantity-1);
-    incObj.price= currPrice*incObj.quantity;
-    totalAmount()
-    cartItems();
-}
-
-var currPrice= 0;
-function decrementItem(){
-    let itemToInc= this.parentNode.previousSibling.innerText;
-    let decObj= cartData.find(element=>element.name==itemToInc);
-    let ind= cartData.indexOf(decObj);
-    if(decObj.quantity >1){
-        currPrice= (decObj.price*decObj.quantity - decObj.price*(decObj.quantity-1))/(decObj.quantity);
-        decObj.quantity-= 1;
-        decObj.price= currPrice*decObj.quantity;
-    }
-    else{
-        document.getElementById(decObj.id).classList.remove('toggle-heart')
-        cartData.splice(ind,1);
-        document.getElementById('cart-plus').innerText= ' ' + cartData.length + ' Items';
-        document.getElementById('m-cart-plus').innerText= ' ' + cartData.length;
-        if(cartData.length < 1 && flag){
-            document.getElementById('food-items').classList.toggle('food-items');
-            document.getElementById('category-list').classList.toggle('food-items');
-            document.getElementById('m-cart-plus').classList.toggle('m-cart-toggle')
-            document.getElementById('cart-page').classList.toggle('cart-toggle');
-            document.getElementById('category-header').classList.toggle('toggle-category');
-            document.getElementById('checkout').classList.toggle('cart-toggle');
-            flag= false;
-            alert("Currently no item in cart!");
-            console.log(flag)
+        const spiceWrapper = document.createElement('span');
+        spiceWrapper.className = 'spice-wrapper';
+        const level = item.spiciness || 3;
+        for (let i = 0; i < level; i++) {
+        const pepper = document.createElement('span');
+        pepper.innerText = '🌶️';
+        spiceWrapper.appendChild(pepper);
         }
+        cellSpice.appendChild(spiceWrapper);
+
+        const btnSpiceInc = document.createElement('button');
+        btnSpiceInc.className = 'increase-spice';
+        btnSpiceInc.innerText = '+';
+        cellSpice.appendChild(btnSpiceInc);
+  
+      // 4) quantity
+      const cellQty = document.createElement('td');
+      const btnDec = document.createElement('button');
+      btnDec.className = 'decrease-item';
+      btnDec.innerText = '-';
+      const spanQty = document.createElement('span');
+      spanQty.innerText = item.quantity;
+      const btnInc = document.createElement('button');
+      btnInc.className = 'increase-item';
+      btnInc.innerText = '+';
+      cellQty.appendChild(btnDec);
+      cellQty.appendChild(spanQty);
+      cellQty.appendChild(btnInc);
+  
+      // 5) cost
+      const cellPrice = document.createElement('td');
+      cellPrice.innerText = item.price;
+  
+
+      tr.appendChild(cellImg);
+      tr.appendChild(cellName);
+      tr.appendChild(cellSpice); 
+      tr.appendChild(cellQty);
+      tr.appendChild(cellPrice);
+  
+      tableBody.appendChild(tr);
+    });
+  
+    document.querySelectorAll('.increase-item').forEach(btn => btn.addEventListener('click', incrementItem));
+    document.querySelectorAll('.decrease-item').forEach(btn => btn.addEventListener('click', decrementItem));
+    document.querySelectorAll('.increase-spice').forEach(btn =>
+        btn.addEventListener('click', changeSpice)
+      );
+      document.querySelectorAll('.decrease-spice').forEach(btn =>
+        btn.addEventListener('click', changeSpice)
+      );
+  }
+  
+  function changeSpice() { // CHANGE SPICENESS
+    const tr = this.closest('tr');
+    const itemName = tr.children[1].innerText;
+    const obj = cartData.find(el => el.name === itemName);
+    if (this.classList.contains('increase-spice')) {
+      obj.spiciness = Math.min(5, (obj.spiciness || 3) + 1);
+    } else {
+      obj.spiciness = Math.max(1, (obj.spiciness || 3) - 1);
     }
-    totalAmount()
-    cartItems()
-}
+    cartItems();
+  }
+  
+
+  function incrementItem(){
+    const tr = this.closest('tr');
+    const itemName = tr.children[1].innerText;      
+    const incObj = cartData.find(el => el.name === itemName);
+    incObj.quantity += 1;
+  
+    const unitPrice = incObj.price / (incObj.quantity - 1);
+    incObj.price = unitPrice * incObj.quantity;
+  
+    totalAmount();
+    cartItems();
+  }
+  
+  function decrementItem(){
+    const tr = this.closest('tr');
+    const itemName = tr.children[1].innerText;
+    const decObj = cartData.find(el => el.name === itemName);
+    const idx = cartData.indexOf(decObj);
+  
+    if(decObj.quantity > 1){
+      const unitPrice = decObj.price / decObj.quantity;
+      decObj.quantity -= 1;
+      decObj.price = unitPrice * decObj.quantity;
+    } else {
+      document.getElementById(decObj.id).classList.remove('toggle-heart');
+      cartData.splice(idx, 1);
+      document.getElementById('cart-plus').innerText = ' ' + cartData.length + ' Items';
+      document.getElementById('m-cart-plus').innerText = ' ' + cartData.length;
+      if(cartData.length < 1 && flag){
+        cartToggle();  
+      }
+    }
+  
+    totalAmount();
+    cartItems();
+  }
 
 function totalAmount(){ // counting discounts
     let sum = cartData.reduce((acc, item) => acc + item.price, 0);
