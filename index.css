@@ -586,3 +586,36 @@ color: var(--bg-card);
         padding: 0;
     }
 }
+
+
+/* PROMOCODES AND DISCOUNTS */
+#discount-amount {
+    font-size: 20px;
+    color: green;
+    margin: 5px 0;
+  }
+  
+  .promo-code-box {
+    margin: 10px 0;
+  }
+  
+  #promo-code-input {
+    width: 65%;
+    padding: 8px;
+    border: 1px solid var(--txt-accent);
+    border-radius: 4px;
+    outline: none;
+  }
+  
+  #apply-promo-btn {
+    padding: 8px 12px;
+    margin-left: 6px;
+    border: none;
+    background: var(--txt-accent);
+    color: var(--bg-card);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  #apply-promo-btn:active {
+    opacity: 0.8;
+  }

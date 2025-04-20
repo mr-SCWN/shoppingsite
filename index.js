@@ -1,5 +1,12 @@
 import {foodItem} from './fooditem.js'
 
+const PROMO_CODES = {
+    'SAVE10': 10,
+    'SAVE15': 15,
+    'SAVE20': 20
+  };
+  let currentDiscountPercent = 0;
+
 function displayItems(){
     var biryani= document.getElementById('biryani');
     var paneer=  document.getElementById('paneer');;
@@ -413,15 +420,25 @@ function decrementItem(){
     cartItems()
 }
 
-function totalAmount(){
-    var sum=0;
-    cartData.map(item=>{
-        sum+= item.price;
-    })
-    document.getElementById('total-item').innerText= 'Total Item : ' + cartData.length;
-    document.getElementById('total-price').innerText= 'Total Price : $ ' + sum;
-    document.getElementById('m-total-amount').innerText= 'Total Price : $ ' + sum;
-}
+function totalAmount(){ // counting discounts
+    let sum = cartData.reduce((acc, item) => acc + item.price, 0);
+  
+    const discountValue = sum * (currentDiscountPercent / 100);
+    const finalTotal = sum - discountValue;
+  
+    document.getElementById('total-item').innerText =
+      'Total Item : ' + cartData.length;
+    document.getElementById('total-price').innerText =
+      'Total Price : $ ' + finalTotal.toFixed(2);
+    document.getElementById('discount-amount').innerText =
+      'Discount : $ ' + discountValue.toFixed(2);
+  
+    const mTotal = document.getElementById('m-total-amount');
+    if (mTotal) mTotal.innerText = 'Total Price : $ ' + finalTotal.toFixed(2);
+    const mDiscount = document.getElementById('m-discount-amount');
+    if (mDiscount) mDiscount.innerText = 'Discount : $ ' + discountValue.toFixed(2);
+  }
+  
 
 document.getElementById('cart-plus').addEventListener('click',cartToggle);
 document.getElementById('m-cart-plus').addEventListener('click',cartToggle);
@@ -516,3 +533,17 @@ themeToggle.addEventListener('click', () => {
     localStorage.setItem('theme', 'light');
   }
 });
+
+// Apply button for promocodes
+document.getElementById('apply-promo-btn').addEventListener('click', () => {
+    const code = document.getElementById('promo-code-input')
+                     .value.trim().toUpperCase();
+    if (PROMO_CODES.hasOwnProperty(code)) {
+      currentDiscountPercent = PROMO_CODES[code];
+      alert(`DISCOUNT: ${currentDiscountPercent}% `);
+    } else {
+      currentDiscountPercent = 0;
+      alert('WRONG PROMO-CODE');
+    }
+    totalAmount(); 
+  });
