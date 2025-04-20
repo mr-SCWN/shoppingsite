@@ -495,3 +495,24 @@ function addAddress(){
         alert("Address not added")
     }
 }
+
+// —— dark / light theme toggle ——
+const themeToggle = document.getElementById('theme-toggle');
+const rootEl = document.documentElement;
+
+if (localStorage.getItem('theme') === 'dark') {
+  rootEl.classList.add('dark');
+  themeToggle.classList.replace('fa-moon-o', 'fa-sun-o');
+}
+
+themeToggle.addEventListener('click', () => {
+  const isDark = rootEl.classList.toggle('dark');
+
+  if (isDark) {
+    themeToggle.classList.replace('fa-moon-o', 'fa-sun-o');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    themeToggle.classList.replace('fa-sun-o', 'fa-moon-o');
+    localStorage.setItem('theme', 'light');
+  }
+});
